@@ -1,3 +1,4 @@
+
 const SUPABASE_URL = "https://hlkhbmphusfbhiupyrgd.supabase.co";
 const SUPABASE_KEY = "sb_publishable_EtU6Q7SUS3pw3upqjRAdpQ_NhCR-gRS";
 
@@ -63,7 +64,7 @@ async function loadRooms() {
   if (error) {
     showMessage(
       roomList,
-      "No se pudieron cargar las salas. Revisa la configuración de Supabase.",
+      "No se pudieron cargar las salas. Revisa Supabase.",
       true
     );
     console.error("Error al cargar salas:", error.message);
@@ -205,8 +206,19 @@ function getPrivateSession() {
   }
 }
 
-function renderPrivateDetails(room, isJoined = false) {
+async function renderPrivateDetails(room, isJoined = false) {
   if (!privateRoomDetails || !room) return;
+
+  const roomId = room.room_id ?? room.id;
+
+  if (!roomId) {
+    showMessage(
+      privateRoomDetails,
+      "No se encontró el identificador de la sala.",
+      true
+    );
+    return;
+  }
 
   const card = document.createElement("article");
   card.className = "room";
@@ -215,31 +227,77 @@ function renderPrivateDetails(room, isJoined = false) {
   heading.textContent = room.name || "Sala privada de Dynasty";
 
   const code = document.createElement("p");
-  code.textContent = `Código de acceso: ${room.access_code}`;
+  code.textContent = `Código de acceso: ${room.access_code || "No disponible"}`;
 
   const count = document.createElement("p");
-  count.textContent =
-    `Jugadores: ${room.players_count ?? 0} / ${room.max_players ?? 50}`;
+  count.textContent = "Cargando jugadores...";
+
+  const playersHeading = document.createElement("h4");
+  playersHeading.textContent = "Jugadores de la sala";
+
+  const playersList = document.createElement("ul");
 
   const status = document.createElement("p");
   status.textContent = isJoined
     ? "Estás dentro de esta sala privada."
-    : "Comparte este código únicamente con las personas que quieras invitar.";
+    : "Comparte este código solo con las personas que quieras invitar.";
 
-  card.append(heading, code, count, status);
+  card.append(
+    heading,
+    code,
+    count,
+    playersHeading,
+    playersList,
+    status
+  );
 
   if (isJoined) {
     const leaveButton = document.createElement("button");
     leaveButton.type = "button";
     leaveButton.className = "button secondary";
     leaveButton.textContent = "Salir de la sala";
-
     leaveButton.addEventListener("click", leavePrivateRoom);
-
     card.appendChild(leaveButton);
   }
 
   privateRoomDetails.replaceChildren(card);
+
+  try {
+    const { data, error } = await supabaseClient.rpc(
+      "list_private_room_players",
+      { p_room_id: roomId }
+    );
+
+    if (error) throw error;
+
+    playersList.replaceChildren();
+
+    if (!data || data.length === 0) {
+      const item = document.createElement("li");
+      item.textContent = "Todavía no hay jugadores registrados.";
+      playersList.appendChild(item);
+    } else {
+      data.forEach((player) => {
+        const item = document.createElement("li");
+        item.textContent = player.player_name;
+        playersList.appendChild(item);
+      });
+    }
+
+    count.textContent =
+      `Jugadores: ${data?.length ?? 0} / ${room.max_players ?? 50}`;
+  } catch (error) {
+    count.textContent =
+      `Jugadores: ${room.players_count ?? 0} / ${room.max_players ?? 50}`;
+
+    playersList.replaceChildren();
+
+    const item = document.createElement("li");
+    item.textContent = "No se pudo cargar la lista de jugadores.";
+    playersList.appendChild(item);
+
+    console.error("Error al cargar jugadores privados:", error);
+  }
 }
 
 // Crear una sala privada
@@ -288,10 +346,10 @@ if (createPrivateButton) {
 
       showMessage(
         createRoomMessage,
-        `¡Sala creada! Tu código es ${room.access_code}. Compártelo con tus amigos.`
+        `¡Sala creada! Código: ${room.access_code}. Compártelo con tus amigos.`
       );
 
-      renderPrivateDetails(room);
+      await renderPrivateDetails(room);
     } catch (error) {
       showMessage(
         createRoomMessage,
@@ -382,7 +440,8 @@ if (joinPrivateButton) {
       );
 
       showMessage(joinRoomMessage, "¡Entraste a la sala privada!");
-      renderPrivateDetails(session, true);
+
+      await renderPrivateDetails(session, true);
     } catch (error) {
       showMessage(
         joinRoomMessage,
@@ -439,7 +498,9 @@ async function leavePrivateRoom() {
       localStorage.getItem(LAST_PRIVATE_ROOM_KEY) || "null"
     );
 
-    if (lastRoom) renderPrivateDetails(lastRoom);
+    if (lastRoom) {
+      await renderPrivateDetails(lastRoom);
+    }
   } catch (error) {
     showMessage(
       joinRoomMessage,
