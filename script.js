@@ -169,3 +169,21 @@ async function loadRooms() {
 
 loadRooms();
 
+supabaseClient
+  .channel("dynasty-rooms-live")
+  .on(
+    "postgres_changes",
+    {
+      event: "*",
+      schema: "public",
+      table: "rooms"
+    },
+    () => {
+      loadRooms();
+    }
+  )
+  .subscribe((status) => {
+    console.log("Estado del lobby en tiempo real:", status);
+  });
+
+
