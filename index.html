@@ -1,4 +1,5 @@
 <!doctype html>
+
 <html lang="es">
 <head>
   <meta charset="utf-8">
@@ -15,58 +16,80 @@
     <p class="tagline">Juega · Conecta · Sé parte de la tribu</p>
     <div class="pill">✦ OBJETIVO: SALAS DE HASTA 50 JUGADORES ✦</div>
     <p class="note">Versión inicial de la web · Las partidas reales aún no están conectadas</p>
-  </header>
-
-  <main>
+  </header>  <main>
     <section class="welcome panel">
       <p class="eyebrow">BIENVENIDO, TRIPULANTE</p>
       <h2>La próxima partida comienza aquí.</h2>
-      <p>Explora la comunidad, consulta las salas de demostración y prepárate para jugar con Dynasty Tribe.</p>
+      <p>Explora las salas y prepárate para jugar con Dynasty Tribe.</p>
       <div class="actions">
         <a class="button primary" href="#salas">Ver salas</a>
         <a class="button secondary" href="#como-funciona">Cómo funciona</a>
       </div>
-    </section>
+    </section><section id="salas" class="panel">
+  <div class="section-head">
+    <div>
+      <p class="eyebrow">LOBBY</p>
+      <h2>Salas disponibles</h2>
+    </div>
+    <span class="status"><i></i> LOBBY</span>
+  </div>
+  <div id="room-list" class="rooms"></div>
+  <p class="small">Consulta las salas disponibles del servidor.</p>
+</section>
 
-    <section id="salas" class="panel">
-      <div class="section-head">
-        <div>
-          <p class="eyebrow">LOBBY</p>
-          <h2>Salas disponibles</h2>
-        </div>
-        <span class="status"><i></i> DEMO</span>
-      </div>
-      <div id="room-list" class="rooms"></div>
-      <p class="small">Estas salas son ejemplos visuales. Todavía no crean partidas ni conectan jugadores al juego.</p>
-    </section>
+<section id="salas-privadas" class="panel">
+  <div class="section-head">
+    <div>
+      <p class="eyebrow">DYNASTY TRIBE</p>
+      <h2>Salas privadas</h2>
+    </div>
+    <span class="status"><i></i> PRIVADAS</span>
+  </div>
 
-    <section id="como-funciona" class="panel info-grid">
-      <article>
-        <div class="symbol">01</div>
-        <h3>Encuentra una sala</h3>
-        <p>Más adelante mostraremos salas reales, su región y cuántos jugadores hay conectados.</p>
-      </article>
-      <article>
-        <div class="symbol">02</div>
-        <h3>Únete con un código</h3>
-        <p>El código de acceso se conectará al sistema de partidas cuando configuremos el servidor compatible.</p>
-      </article>
-      <article>
-        <div class="symbol">03</div>
-        <h3>Juega con respeto</h3>
-        <p>Dynasty Tribe tendrá reglas claras y moderación para mantener una comunidad segura.</p>
-      </article>
-    </section>
-  </main>
+  <div class="private-room-form">
+    <h3>Crear una sala</h3>
+    <p>Crea tu propia sala y comparte el código con tus amigos.</p>
+    <label for="private-room-name">Nombre de la sala</label>
+    <input id="private-room-name" type="text" maxlength="40" placeholder="Ej. Dynasty Elite">
+    <button id="create-private-room" class="button primary" type="button">Crear sala privada</button>
+    <p id="create-room-message" class="small" aria-live="polite"></p>
+  </div>
 
-  <footer>
+  <div class="private-room-form">
+    <h3>Entrar con código</h3>
+    <label for="private-room-code">Código de acceso</label>
+    <input id="private-room-code" type="text" maxlength="8" placeholder="Escribe el código">
+    <label for="private-player-name">Tu nombre de jugador</label>
+    <input id="private-player-name" type="text" maxlength="20" placeholder="Tu nombre">
+    <button id="join-private-room" class="button primary" type="button">Entrar a la sala</button>
+    <p id="join-room-message" class="small" aria-live="polite"></p>
+  </div>
+
+  <div id="private-room-details" class="rooms"></div>
+</section>
+
+<section id="como-funciona" class="panel info-grid">
+  <article>
+    <div class="symbol">01</div>
+    <h3>Encuentra una sala</h3>
+    <p>Consulta las salas y sus jugadores.</p>
+  </article>
+  <article>
+    <div class="symbol">02</div>
+    <h3>Únete con un código</h3>
+    <p>Introduce el código de una sala privada para intentar entrar.</p>
+  </article>
+  <article>
+    <div class="symbol">03</div>
+    <h3>Juega con respeto</h3>
+    <p>Dynasty Tribe tendrá reglas claras para mantener una comunidad segura.</p>
+  </article>
+</section>
+
+  </main>  <footer>
     <div class="footer-mark">♛ DYNASTY SERVER</div>
     <p>Hecho para la comunidad Dynasty Tribe.</p>
     <p class="small">Proyecto comunitario independiente. No es una web oficial de Among Us ni de Innersloth.</p>
-  </footer>
-  
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script src="script.js"></script>
-</body>
+  </footer>  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>  <script src="script.js"></script></body>
 </html>
 
